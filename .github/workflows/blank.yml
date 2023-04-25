@@ -18,20 +18,13 @@ jobs:
         python-version: '3.x'
         architecture: 'x64'
         add-path: true
-      run: |
-        # Install MSYS2
-        choco install msys2 -y
-        # Initialize MSYS2
-        C:\tools\msys64\usr\bin\bash.exe -l -c "echo -e '[multilib]\nInclude = /etc/pacman.d/mirrorlist\n' >> /etc/pacman.conf"
-        C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -Syu --noconfirm"
-        # Install build dependencies
-        C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-nasm"
-
+    
     - name: Install build dependencies
       run: |
-        pacman -S --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-pkg-config \
-        mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-nasm
-
+        choco install msys2 -y
+        C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -Syu --noconfirm"
+        C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-nasm"
+    
     - name: Build FFmpeg
       run: |
         git clone --depth 1 https://github.com/FFmpeg/FFmpeg.git
@@ -43,9 +36,10 @@ jobs:
         --prefix=/usr/local/ffmpeg
         make -j$(nproc)
         make install
-        
+    
     - name: Create artifact
       uses: actions/upload-artifact@v2
       with:
         name: ffmpeg-binaries
         path: /usr/local/ffmpeg
+    
