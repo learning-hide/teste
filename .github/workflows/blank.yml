@@ -13,7 +13,19 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install MSYS2
-      uses: microsoft/setup-msys2@v1
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
+        add-path: true
+      run: |
+        # Install MSYS2
+        choco install msys2 -y
+        # Initialize MSYS2
+        C:\tools\msys64\usr\bin\bash.exe -l -c "echo -e '[multilib]\nInclude = /etc/pacman.d/mirrorlist\n' >> /etc/pacman.conf"
+        C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -Syu --noconfirm"
+        # Install build dependencies
+        C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-nasm"
 
     - name: Install build dependencies
       run: |
