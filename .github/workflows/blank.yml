@@ -1,0 +1,39 @@
+name: Build FFmpeg for Windows
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install MSYS2
+      uses: microsoft/setup-msys2@v1
+
+    - name: Install build dependencies
+      run: |
+        pacman -S --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-pkg-config \
+        mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-nasm
+
+    - name: Build FFmpeg
+      run: |
+        git clone --depth 1 https://github.com/FFmpeg/FFmpeg.git
+        cd FFmpeg
+        ./configure --disable-doc --disable-shared --enable-static --disable-network --disable-protocols \
+        --disable-bsfs --disable-encoders --disable-decoders --disable-filters --disable-muxers --disable-demuxers \
+        --enable-decoder=png --enable-decoder=mjpeg --enable-filter=scale --enable-filter=rotate \
+        --arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32- \
+        --prefix=/usr/local/ffmpeg
+        make -j$(nproc)
+        make install
+        
+    - name: Create artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ffmpeg-binaries
+        path: /usr/local/ffmpeg
