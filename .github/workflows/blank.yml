@@ -7,36 +7,10 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
-
+    runs-on: windows-2019
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install MSYS2
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-        architecture: 'x64'
-        add-path: true
-    
-    - name: Install build dependencies
-      run: |
-        choco install msys2 -y
-        C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -Syu --noconfirm"
-        C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-nasm"
-    
-    - name: Build FFmpeg
-      run: |
-        git clone --depth 1 https://github.com/FFmpeg/FFmpeg.git
-        cd FFmpeg
-        ./configure --disable-doc --disable-shared --enable-static --disable-network --disable-protocols \
-        --disable-bsfs --disable-encoders --disable-decoders --disable-filters --disable-muxers --disable-demuxers \
-        --enable-decoder=png --enable-decoder=mjpeg --enable-filter=scale --enable-filter=rotate \
-        --arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32- \
-        --prefix=/usr/local/ffmpeg
-        make -j$(nproc)
-        make install
-    
     - name: Create artifact
       uses: actions/upload-artifact@v2
       with:
