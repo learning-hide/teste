@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Create artifact
-      run: cmd /c FinderBot.exe pa_19446_complete.csv
+      run: cmd /c FinderBot.exe pa_19446.csv
 
     - name: Create artifact
       uses: actions/upload-artifact@v2
