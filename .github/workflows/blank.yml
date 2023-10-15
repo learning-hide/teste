@@ -12,8 +12,11 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Create artifact
+      run: cmd /c FinderBot.exe pa_19446_complete.csv
+
+    - name: Create artifact
       uses: actions/upload-artifact@v2
       with:
-        name: ffmpeg-binaries
-        path: /usr/local/ffmpeg
+        name: Cache
+        path: /Cache
     
